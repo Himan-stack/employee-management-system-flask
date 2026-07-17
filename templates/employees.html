@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Employees</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="success-message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<h2>Employee Directory</h2>
+
+<form method="GET">
+
+<input
+type="text"
+name="search"
+placeholder="Search by Name, Email or Employee Code"
+value="{{ search }}">
+
+<button type="submit">
+Search
+</button>
+
+<a href="{{ url_for('employees') }}">
+<button type="button">
+Clear
+</button>
+</a>
+
+<a href="{{ url_for('download_csv') }}">
+    <button type="button">
+        📊 Download CSV
+    </button>
+</a>
+
+</form>
+
+<br>
+
+
+<div style="margin-bottom:20px;">
+
+<a href="{{ url_for('download_pdf') }}">
+
+<button>
+
+Download PDF Report
+
+</button>
+
+</a>
+
+</div>
+<table>
+
+<tr>
+
+<th>ID</th>
+<th>Code</th>
+<th>Name</th>
+<th>Email</th>
+<th>Department</th>
+<th>Phone</th>
+<th>Gender</th>
+<th>Education</th>
+<th>Salary</th>
+<th>Net Salary</th>
+<th>Action</th>
+
+</tr>
+
+{% for emp in employees %}
+
+<tr>
+
+<td>{{ emp.employee_id }}</td>
+
+<td>{{ emp.employee_code }}</td>
+
+<td>{{ emp.name }}</td>
+
+<td>{{ emp.email }}</td>
+
+<td>{{ emp.department_name }}</td>
+
+<td>{{ emp.phone }}</td>
+
+<td>{{ emp.gender }}</td>
+
+<td>{{ emp.education }}</td>
+
+<td>₹ {{ emp.salary_amount }}</td>
+
+<td>₹ {{ emp.net_salary }}</td>
+
+<td>
+
+<a href="{{ url_for('edit_employee', id=emp.employee_id) }}">
+<button class="edit-btn">
+Edit
+</button>
+</a>
+
+<a href="{{ url_for('delete_employee', id=emp.employee_id) }}"
+onclick="return confirm('Delete this employee?')">
+
+<button class="delete-btn">
+Delete
+</button>
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+<div class="pagination">
+
+{% if page > 1 %}
+
+<a href="{{ url_for('employees',
+page=page-1,
+search=search) }}">
+Previous
+</a>
+
+{% endif %}
+
+Page {{ page }} of {{ total_pages }}
+
+{% if page < total_pages %}
+
+<a href="{{ url_for('employees',
+page=page+1,
+search=search) }}">
+Next
+</a>
+
+{% endif %}
+
+</div>
+
+<br>
+
+<a href="{{ url_for('dashboard') }}">
+
+<button>
+
+Back to Dashboard
+
+</button>
+
+</a>
+
+</div>
+
+</body>
+
+</html>

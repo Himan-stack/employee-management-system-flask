@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Employee Management System</h1>
+
+    <h3>Welcome Admin 👋</h3>
+
+    <div class="cards">
+
+        <div class="card">
+            <h2>Employees</h2>
+            <p>{{ employees }}</p>
+        </div>
+
+        <div class="card">
+            <h2>Departments</h2>
+            <p>{{ departments }}</p>
+        </div>
+
+        <div class="card">
+            <h2>Projects</h2>
+            <p>{{ projects }}</p>
+        </div>
+
+        <div class="card">
+            <h2>Salary Records</h2>
+            <p>{{ salary }}</p>
+        </div>
+    </div>
+
+        <div class="cards">
+        <div class="card">
+        <h2>Highest Salary</h2>
+        <p>₹ {{ highest_salary }}</p>
+    </div>
+
+    <div class="card">
+        <h2>Lowest Salary</h2>
+        <p>₹ {{ lowest_salary }}</p>
+    </div>
+
+    <div class="card">
+        <h2>Average Salary</h2>
+        <p>₹ {{ average_salary }}</p>
+    </div>
+
+    </div>
+
+    <br>
+    <hr>
+
+    <h3>🔍 Quick Employee Search</h3>
+
+    <form action="{{ url_for('employees') }}" method="GET">
+
+    <div class="search-box">
+
+    <input
+    type="text"
+    name="search"
+    placeholder="Search Employee">
+
+    <button>
+
+    🔍 Search
+
+    </button>
+
+    </div>
+
+    </form>
+
+    <hr>
+
+    <a href="{{ url_for('add_employee') }}">
+        <button>➕ Add Employee</button>
+    </a>
+
+    <br><br>
+
+    <a href="{{ url_for('employees') }}">
+        <button>👥 View Employees</button>
+    </a>
+
+    <hr>
+    <div class="chart-container">
+
+    <div class="chart-box">
+
+        <h3>Employees by Department</h3>
+
+        <canvas id="departmentChart"></canvas>
+
+    </div>
+
+    <div class="chart-box">
+
+        <h3>Department Distribution</h3>
+
+        <canvas id="pieChart"></canvas>
+
+    </div>
+
+    </div>
+    
+
+    <br>
+
+    <a href="{{ url_for('logout') }}">
+        <button>🚪Logout</button>
+    </a>
+    <hr>
+    <div class="table-container">
+    <h3>Recently Added Employees</h3>
+
+<table>
+
+    <tr>
+
+    <th>Code</th>
+
+    <th>Name</th>
+
+    <th>Email</th>
+
+    </tr>
+
+    {% for emp in recent_employees %}
+
+    <tr>
+
+    <td>{{ emp.employee_code }}</td>
+
+    <td>{{ emp.name }}</td>
+
+    <td>{{ emp.email }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+<script>
+
+const labels = {{ labels | tojson }};
+const values = {{ values | tojson }};
+
+new Chart(document.getElementById("departmentChart"), {
+
+    type: "bar",
+
+    data: {
+
+        labels: labels,
+
+        datasets: [{
+
+            label: "Employees",
+
+            data: values
+
+        }]
+    },
+
+    options: {
+
+        responsive: true,
+
+        scales: {
+
+            y: {
+
+                beginAtZero: true
+
+            }
+
+        }
+
+    }
+
+});
+
+new Chart(document.getElementById("pieChart"),{
+
+    type:"pie",
+
+    data:{
+
+        labels:labels,
+
+        datasets:[{
+
+            data:values
+
+        }]
+
+    }
+
+});
+
+</script>
+
+<footer class="footer">
+
+    <img src="{{ url_for('static', filename='images/50hertz.png') }}" alt="50 Hertz Logo">
+
+    <h2>50 Hertz Energy Redefined</h2>
+
+    <p>Employee Management System</p>
+
+    <p>Internship Project</p>
+
+    <p>Developed by Himanshu under the guidance of Mr. Lokender Singh</p>
+
+    <p>Flask • MySQL • HTML • CSS • Chart.js</p>
+
+</footer>
+</div>
+</body>
+</html>
