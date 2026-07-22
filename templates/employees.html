@@ -1,179 +1,141 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
+{% from "components/macros.html" import icon, avatar, badge, pagination, empty_state %}
 
-<head>
+{% block title %}Employees{% endblock %}
+{% block breadcrumb %}Employees{% endblock %}
 
-    <title>Employees</title>
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1 class="page-header__title">Employee Directory</h1>
+    <p class="page-header__subtitle">Search, filter, and manage every member of your organisation.</p>
+  </div>
+  <div class="page-header__actions">
+    <a href="{{ url_for('download_csv') }}" class="btn btn--secondary" data-testid="employees-download-csv">
+      {{ icon('download') }} CSV  
+    </a>
+    <a href="{{ url_for('download_pdf') }}" class="btn btn--secondary" data-testid="employees-download-pdf">
+      {{ icon('file-text') }} PDF
+    </a>
+    <a href="{{ url_for('add_employee') }}" class="btn btn--primary" data-testid="employees-add">
+      {{ icon('plus') }} Add Employee
+    </a>
+  </div>
+</section>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+<div class="table-wrap">
+  <!-- Toolbar / filters -->
+  <div class="table-toolbar">
+    <div class="u-row" style="gap: var(--s-3);">
+      <span class="emp-toolbar__title">All employees</span>
+      <span class="emp-toolbar__count" data-testid="employees-count">{{ employees|length }} shown</span>
+    </div>
 
-</head>
+    <form method="GET" class="filter-bar u-grow" data-search-debounce style="justify-content: flex-end;" role="search">
+      <div class="search">
+        {{ icon('search') }}
+        <input type="text" name="search"
+               placeholder="Search by name, email or code"
+               value="{{ search }}"
+               aria-label="Search employees"
+               data-testid="employees-search">
+      </div>
+      <button type="submit" class="btn btn--secondary" data-testid="employees-search-submit">Search</button>
+      {% if search %}
+        <a href="{{ url_for('employees') }}" class="btn btn--ghost" data-testid="employees-clear">
+          {{ icon('x') }} Clear
+        </a>
+      {% endif %}
+    </form>
+  </div>
 
-<body>
+  <!-- Bulk selection bar -->
+  <div class="selection-bar" data-selection-bar>
+    <div class="u-row">
+      <strong data-selection-count>0</strong>
+      <span>employee(s) selected</span>
+    </div>
+    <div class="selection-bar__actions">
+      <button type="button" class="btn btn--sm btn--ghost" data-clear-selection>{{ icon('x') }} Clear</button>
+      <a href="{{ url_for('download_csv') }}" class="btn btn--sm btn--secondary">{{ icon('download') }} Export selected</a>
+    </div>
+  </div>
 
-<div class="container">
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="success-message">
-                {{ message }}
+  <!-- Table -->
+  {% if employees and employees|length > 0 %}
+  <div class="table-scroll">
+    <table class="table" data-testid="employees-table">
+      <thead>
+        <tr>
+          <th style="width: 40px;">
+            <input type="checkbox" class="table-checkbox" data-check-all aria-label="Select all">
+          </th>
+          <th>Employee</th>
+          <th>Code</th>
+          <th>Department</th>
+          <th>Phone</th>
+          <th>Gender</th>
+          <th>Education</th>
+          <th class="num">Salary</th>
+          <th class="num">Net Salary</th>
+          <th style="width: 100px; text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for emp in employees %}
+        <tr data-testid="employee-row-{{ emp.employee_id }}">
+          <td>
+            <input type="checkbox" class="table-checkbox" data-check-row value="{{ emp.employee_id }}" aria-label="Select {{ emp.name }}">
+          </td>
+          <td>
+            <div class="emp-cell">
+              {{ avatar(emp.name) }}
+              <div class="emp-cell__meta">
+                <div class="emp-cell__name">{{ emp.name }}</div>
+                <div class="emp-cell__sub">{{ emp.email }}</div>
+              </div>
             </div>
+          </td>
+          <td><span class="u-mono">{{ emp.employee_code }}</span></td>
+          <td>{{ badge(emp.department_name, 'indigo') }}</td>
+          <td class="u-mono">{{ emp.phone }}</td>
+          <td>
+            {%- if emp.gender == 'Male' -%}{{ badge('Male','sky') }}
+            {%- elif emp.gender == 'Female' -%}{{ badge('Female','rose') }}
+            {%- else -%}{{ badge(emp.gender or '—') }}{%- endif -%}
+          </td>
+          <td><span class="u-muted">{{ emp.education }}</span></td>
+          <td class="num">₹ {{ '{:,.0f}'.format(emp.salary_amount or 0) }}</td>
+          <td class="num"><strong>₹ {{ '{:,.0f}'.format(emp.net_salary or 0) }}</strong></td>
+          <td>
+            <div class="row-actions" style="justify-content:flex-end;">
+              <a href="{{ url_for('edit_employee', id=emp.employee_id) }}"
+                 class="icon-btn" title="Edit" aria-label="Edit {{ emp.name }}"
+                 data-testid="employee-edit-{{ emp.employee_id }}">
+                {{ icon('edit') }}
+              </a>
+              <a href="{{ url_for('delete_employee', id=emp.employee_id) }}"
+                 class="icon-btn icon-btn--danger" title="Delete" aria-label="Delete {{ emp.name }}"
+                 data-confirm-delete data-confirm-name="{{ emp.name }} ({{ emp.employee_code }})"
+                 data-testid="employee-delete-{{ emp.employee_id }}">
+                {{ icon('trash') }}
+              </a>
+            </div>
+          </td>
+        </tr>
         {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {{ pagination(page, total_pages, 'employees', search) }}
+
+  {% else %}
+    {% if search %}
+      {{ empty_state('No matches found', 'We could not find any employees matching "' ~ search ~ '". Try a different search term.', 'search') }}
+    {% else %}
+      {{ empty_state('No employees yet', 'Get started by adding your first team member.', 'users', 'Add Employee', url_for('add_employee')) }}
     {% endif %}
-{% endwith %}
-
-<h2>Employee Directory</h2>
-
-<form method="GET">
-
-<input
-type="text"
-name="search"
-placeholder="Search by Name, Email or Employee Code"
-value="{{ search }}">
-
-<button type="submit">
-Search
-</button>
-
-<a href="{{ url_for('employees') }}">
-<button type="button">
-Clear
-</button>
-</a>
-
-<a href="{{ url_for('download_csv') }}">
-    <button type="button">
-        📊 Download CSV
-    </button>
-</a>
-
-</form>
-
-<br>
-
-
-<div style="margin-bottom:20px;">
-
-<a href="{{ url_for('download_pdf') }}">
-
-<button>
-
-Download PDF Report
-
-</button>
-
-</a>
-
+  {% endif %}
 </div>
-<table>
-
-<tr>
-
-<th>ID</th>
-<th>Code</th>
-<th>Name</th>
-<th>Email</th>
-<th>Department</th>
-<th>Phone</th>
-<th>Gender</th>
-<th>Education</th>
-<th>Salary</th>
-<th>Net Salary</th>
-<th>Action</th>
-
-</tr>
-
-{% for emp in employees %}
-
-<tr>
-
-<td>{{ emp.employee_id }}</td>
-
-<td>{{ emp.employee_code }}</td>
-
-<td>{{ emp.name }}</td>
-
-<td>{{ emp.email }}</td>
-
-<td>{{ emp.department_name }}</td>
-
-<td>{{ emp.phone }}</td>
-
-<td>{{ emp.gender }}</td>
-
-<td>{{ emp.education }}</td>
-
-<td>₹ {{ emp.salary_amount }}</td>
-
-<td>₹ {{ emp.net_salary }}</td>
-
-<td>
-
-<a href="{{ url_for('edit_employee', id=emp.employee_id) }}">
-<button class="edit-btn">
-Edit
-</button>
-</a>
-
-<a href="{{ url_for('delete_employee', id=emp.employee_id) }}"
-onclick="return confirm('Delete this employee?')">
-
-<button class="delete-btn">
-Delete
-</button>
-
-</a>
-
-</td>
-
-</tr>
-
-{% endfor %}
-
-</table>
-<div class="pagination">
-
-{% if page > 1 %}
-
-<a href="{{ url_for('employees',
-page=page-1,
-search=search) }}">
-Previous
-</a>
-
-{% endif %}
-
-Page {{ page }} of {{ total_pages }}
-
-{% if page < total_pages %}
-
-<a href="{{ url_for('employees',
-page=page+1,
-search=search) }}">
-Next
-</a>
-
-{% endif %}
-
-</div>
-
-<br>
-
-<a href="{{ url_for('dashboard') }}">
-
-<button>
-
-Back to Dashboard
-
-</button>
-
-</a>
-
-</div>
-
-</body>
-
-</html>
+{% endblock %}

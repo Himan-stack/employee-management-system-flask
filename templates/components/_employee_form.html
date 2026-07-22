@@ -1,0 +1,186 @@
+
+{% from "components/macros.html" import icon %}
+
+{% set e = employee if employee is defined else {} %}
+{% set selected_projects = employee_projects if employee_projects is defined else [] %}
+
+<form method="POST" class="form" data-validate autocomplete="on">
+
+  <!-- ==================== Personal Information ==================== -->
+  <section class="form-section" id="section-personal">
+    <div class="form-section__head">
+      <div class="form-section__title">Personal information</div>
+      <div class="form-section__desc">Basic details about the employee.</div>
+    </div>
+    <div class="form-section__body">
+      <div class="form-grid">
+        <div class="field">
+          <label class="field__label" for="name">Full name<span class="req">*</span></label>
+          <input class="input" id="name" name="name" type="text"
+                 placeholder="e.g. Priya Sharma"
+                 value="{{ e.name|default('', true) }}"
+                 required data-required
+                 data-testid="field-name">
+          <span class="field__error" style="display:none">{{ icon('alert') }} This field is required</span>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="email">Email address<span class="req">*</span></label>
+          <input class="input" id="email" name="email" type="email"
+                 placeholder="name@company.com"
+                 value="{{ e.email|default('', true) }}"
+                 required data-required
+                 data-testid="field-email">
+          <span class="field__hint">Used for login and notifications.</span>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="phone">Phone<span class="req">*</span></label>
+          <input class="input" id="phone" name="phone" type="tel"
+                 placeholder="10-digit number"
+                 value="{{ e.phone|default('', true) }}"
+                 maxlength="10" data-phone-input
+                 required data-required
+                 data-testid="field-phone">
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="age">Age<span class="req">*</span></label>
+          <input class="input" id="age" name="age" type="number"
+                 placeholder="e.g. 28"
+                 value="{{ e.age|default('', true) }}"
+                 min="18" max="60"
+                 required data-required
+                 data-testid="field-age">
+          <span class="field__hint">Must be between 18 and 60.</span>
+        </div>
+
+        <div class="field form-field--full">
+          <label class="field__label">Gender<span class="req">*</span></label>
+          <div class="radio-group">
+            <label class="radio">
+              <input type="radio" name="gender" value="Male" required
+                     {% if e.gender == 'Male' %}checked{% endif %}
+                     data-testid="field-gender-male">
+              <span>Male</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="gender" value="Female"
+                     {% if e.gender == 'Female' %}checked{% endif %}
+                     data-testid="field-gender-female">
+              <span>Female</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="gender" value="Other"
+                     {% if e.gender == 'Other' %}checked{% endif %}
+                     data-testid="field-gender-other">
+              <span>Other</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== Address & Education ==================== -->
+  <section class="form-section" id="section-location">
+    <div class="form-section__head">
+      <div class="form-section__title">Location & education</div>
+      <div class="form-section__desc">Where they live and what they studied.</div>
+    </div>
+    <div class="form-section__body">
+      <div class="form-grid">
+        <div class="field">
+          <label class="field__label" for="education">Highest education<span class="req">*</span></label>
+          <select class="select" id="education" name="education" required data-required
+                  data-testid="field-education">
+            <option value="">Select education</option>
+            <option value="Bachelors" {% if e.education == 'Bachelors' %}selected{% endif %}>Bachelors</option>
+            <option value="Masters"   {% if e.education == 'Masters' %}selected{% endif %}>Masters</option>
+            <option value="PHD"       {% if e.education == 'PHD' %}selected{% endif %}>PHD</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="city">City<span class="req">*</span></label>
+          <input class="input" id="city" name="city" type="text"
+                 placeholder="e.g. Bengaluru"
+                 value="{{ e.city|default('', true) }}"
+                 required data-required
+                 data-testid="field-city">
+        </div>
+
+        <div class="field form-field--full">
+          <label class="field__label" for="address">Address<span class="req">*</span></label>
+          <textarea class="textarea" id="address" name="address" rows="3"
+                    placeholder="Street, area, PIN…"
+                    required data-required
+                    data-testid="field-address">{{ e.address|default('', true) }}</textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== Employment ==================== -->
+  <section class="form-section" id="section-employment">
+    <div class="form-section__head">
+      <div class="form-section__title">Employment details</div>
+      <div class="form-section__desc">Department, compensation, and project assignments.</div>
+    </div>
+    <div class="form-section__body">
+      <div class="form-grid">
+        <div class="field">
+          <label class="field__label" for="department">Department<span class="req">*</span></label>
+          <select class="select" id="department" name="department" required data-required
+                  data-testid="field-department">
+            <option value="">Select department</option>
+            {% for dept in departments %}
+              <option value="{{ dept.department_id }}"
+                {% if e.department_id is defined and dept.department_id == e.department_id %}selected{% endif %}>
+                {{ dept.department_name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="payment_tier">Payment tier<span class="req">*</span></label>
+          <select class="select" id="payment_tier" name="payment_tier" required data-required
+                  data-testid="field-payment-tier">
+            <option value="">Select tier</option>
+            <option value="1" {% if e.payment_tier == 1 %}selected{% endif %}>Tier 1 — ₹ 90,000</option>
+            <option value="2" {% if e.payment_tier == 2 %}selected{% endif %}>Tier 2 — ₹ 60,000</option>
+            <option value="3" {% if e.payment_tier == 3 %}selected{% endif %}>Tier 3 — ₹ 35,000</option>
+          </select>
+          <span class="field__hint">Net salary is auto-computed with HRA, bonus and deductions.</span>
+        </div>
+
+        <div class="field form-field--full">
+          <label class="field__label">Assigned projects</label>
+          {% if projects and projects|length > 0 %}
+            <div class="check-tile-group">
+              {% for project in projects %}
+                <label class="check-tile">
+                  <input type="checkbox" name="projects" value="{{ project.project_id }}"
+                         {% if project.project_id in selected_projects %}checked{% endif %}
+                         data-testid="field-project-{{ project.project_id }}">
+                  <span class="check-tile__label">{{ project.project_name }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          {% else %}
+            <span class="field__hint">No projects available.</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== Actions ==================== -->
+  <div class="form-actions">
+    <a href="{{ url_for('employees') }}" class="btn btn--ghost" data-testid="form-cancel">Cancel</a>
+    <button type="submit" class="btn btn--primary" data-testid="form-submit">
+      {{ icon('check') }} {{ submit_label|default('Save employee') }}
+    </button>   
+  </div>
+</form>

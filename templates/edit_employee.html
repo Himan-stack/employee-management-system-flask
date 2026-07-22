@@ -1,167 +1,50 @@
-<!DOCTYPE html>
-<html>
 
-<head>
+{% extends "base.html" %}
+{% from "components/macros.html" import icon, avatar %}
+{% block title %}Edit {{ employee.name }}{% endblock %}
+{% block breadcrumb %}
+  <a href="{{ url_for('employees') }}">Employees</a>
+  <span class="sep">{{ icon('chevron-right') }}</span>
+  <span class="current">Edit · {{ employee.name }}</span>
+{% endblock %}
 
-<title>Edit Employee</title>
+{% block content %}
+<section class="page-header">
+  <div class="u-row" style="gap: var(--s-4);">
+    {{ avatar(employee.name) }}
+    <div>
+      <h1 class="page-header__title" style="font-size: var(--fs-xl);">{{ employee.name }}</h1>
+      <p class="page-header__subtitle">
+        <span class="u-mono">{{ employee.employee_code }}</span> · {{ employee.email }}
+      </p>
+    </div>
+  </div>
+  <div class="page-header__actions">
+    <a href="{{ url_for('employees') }}" class="btn btn--ghost">{{ icon('chevron-left') }} Back</a>
+    <a href="{{ url_for('delete_employee', id=employee.employee_id) }}"
+       class="btn btn--outline-danger"
+       data-confirm-delete data-confirm-name="{{ employee.name }} ({{ employee.employee_code }})"
+       data-testid="edit-delete">
+      {{ icon('trash') }} Delete
+    </a>
+  </div>
+</section>
 
-<link rel="stylesheet"
-href="{{ url_for('static', filename='style.css') }}">
+<div class="form-page">
+  <aside class="form-side">
+    <div class="form-side__title">Sections</div>
+    <div class="form-side__desc">Update any section.</div>
+    <nav class="form-side__nav">
+      <a class="form-side__link is-active" href="#section-personal">Personal information</a>
+      <a class="form-side__link" href="#section-location">Location & education</a>
+      <a class="form-side__link" href="#section-employment">Employment details</a>
+    </nav>
+  </aside>
 
-</head>
-
-<body>
-
-<div class="container">
-
-<h2>Edit Employee</h2>
-
-<form method="POST">
-
-<input
-type="text"
-name="name"
-value="{{ employee.name }}"
-required>
-
-<input
-type="email"
-name="email"
-value="{{ employee.email }}"
-required>
-
-<input
-type="text"
-name="phone"
-value="{{ employee.phone }}"
-required>
-
-<input
-type="number"
-name="age"
-value="{{ employee.age }}"
-required>
-
-<h4>Gender</h4>
-
-<label>
-<input type="radio"
-name="gender"
-value="Male"
-{% if employee.gender=="Male" %}checked{% endif %}>
-Male
-</label>
-
-<label>
-<input type="radio"
-name="gender"
-value="Female"
-{% if employee.gender=="Female" %}checked{% endif %}>
-Female
-</label>
-
-<label>
-<input type="radio"
-name="gender"
-value="Other"
-{% if employee.gender=="Other" %}checked{% endif %}>
-Other
-</label>
-
-<br><br>
-
-<select name="education">
-
-<option {% if employee.education=="Bachelors" %}selected{% endif %}>Bachelors</option>
-
-<option {% if employee.education=="Masters" %}selected{% endif %}>Masters</option>
-
-<option {% if employee.education=="PHD" %}selected{% endif %}>PHD</option>
-
-</select>
-
-<input
-type="text"
-name="city"
-value="{{ employee.city }}"
-required>
-
-<textarea
-name="address">{{ employee.address }}</textarea>
-
-<select name="department">
-
-{% for dept in departments %}
-
-<option
-value="{{ dept.department_id }}"
-{% if dept.department_id==employee.department_id %}selected{% endif %}>
-
-{{ dept.department_name }}
-
-</option>
-
-{% endfor %}
-
-</select>
-
-<select name="payment_tier">
-
-<option value="1"
-{% if employee.payment_tier==1 %}selected{% endif %}>Tier 1</option>
-
-<option value="2"
-{% if employee.payment_tier==2 %}selected{% endif %}>Tier 2</option>
-
-<option value="3"
-{% if employee.payment_tier==3 %}selected{% endif %}>Tier 3</option>
-
-</select>
-
-<h4>Projects</h4>
-
-{% for project in projects %}
-
-<label>
-
-<input
-type="checkbox"
-name="projects"
-value="{{ project.project_id }}"
-{% if project.project_id in employee_projects %}checked{% endif %}>
-
-{{ project.project_name }}
-
-</label>
-
-<br>
-
-{% endfor %}
-
-<br>
-
-<button>
-
-Update Employee
-
-</button>
-
-</form>
-
-<br>
-
-<a href="{{ url_for('employees') }}">
-
-<button>
-
-Back
-
-</button>
-
-</a>
-
+  <div>
+    {% with submit_label = 'Update employee' %}
+      {% include "components/_employee_form.html" %}
+    {% endwith %}
+  </div>
 </div>
-
-</body>
-
-</html>
+{% endblock %}

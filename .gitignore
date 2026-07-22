@@ -22,3 +22,6 @@ Employees_Report.csv
 # Operating System Files
 .DS_Store
 Thumbs.db
+
+employees.pdf
+*.log

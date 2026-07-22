@@ -1,167 +1,43 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
+{% from "components/macros.html" import icon %}
 
-<head>
+{% block title %}Add Employee{% endblock %}
+{% block breadcrumb %}
+  <a href="{{ url_for('employees') }}">Employees</a>
+  <span class="sep">{{ icon('chevron-right') }}</span>
+  <span class="current">Add employee</span>
+{% endblock %}
 
-    <title>Add Employee</title>
-
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
-
-</head>
-
-<body>
-
-<div class="container">
-
-<h2>Add Employee</h2>
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1 class="page-header__title">Onboard a new employee</h1>
+    <p class="page-header__subtitle">Fill in the details below to create a new employee record.</p>
+  </div>
+</section>
 
 {% if error %}
-<p class="error">{{ error }}</p>
+  <div class="alert alert--danger" role="alert" style="margin-bottom: var(--s-6);" data-testid="form-error">
+    {{ icon('alert', cls='alert__icon') }}
+    <div class="alert__body"><strong>Cannot save.</strong> {{ error }}</div>
+  </div>
 {% endif %}
 
-<form method="POST">
+<div class="form-page">
+  <aside class="form-side">
+    <div class="form-side__title">Sections</div>
+    <div class="form-side__desc">Jump to any section.</div>
+    <nav class="form-side__nav">
+      <a class="form-side__link is-active" href="#section-personal">Personal information</a>
+      <a class="form-side__link" href="#section-location">Location & education</a>
+      <a class="form-side__link" href="#section-employment">Employment details</a>
+    </nav>
+  </aside>
 
-<input
-type="text"
-name="name"
-placeholder="Employee Name"
-required>
-
-<input
-type="email"
-name="email"
-placeholder="Email"
-required>
-
-<input
-type="text"
-name="phone"
-placeholder="Phone Number"
-maxlength="10"
-required>
-
-<input
-type="number"
-name="age"
-placeholder="Age"
-min="18"
-max="60"
-required>
-
-<h4>Gender</h4>
-
-<label>
-<input type="radio" name="gender" value="Male" required>
-Male
-</label>
-
-<label>
-<input type="radio" name="gender" value="Female">
-Female
-</label>
-
-<label>
-<input type="radio" name="gender" value="Other">
-Other
-</label>
-
-<br><br>
-
-<select name="education" required>
-
-<option value="">Select Education</option>
-
-<option>Bachelors</option>
-
-<option>Masters</option>
-
-<option>PHD</option>
-
-</select>
-
-<input
-type="text"
-name="city"
-placeholder="City"
-required>
-
-<textarea
-name="address"
-placeholder="Address"
-required></textarea>
-
-<select name="department" required>
-
-<option value="">Select Department</option>
-
-{% for dept in departments %}
-
-<option value="{{ dept.department_id }}">
-
-{{ dept.department_name }}
-
-</option>
-
-{% endfor %}
-
-</select>
-
-<select name="payment_tier" required>
-
-<option value="">Payment Tier</option>
-
-<option value="1">Tier 1</option>
-
-<option value="2">Tier 2</option>
-
-<option value="3">Tier 3</option>
-
-</select>
-
-<h4>Select Projects</h4>
-
-{% for project in projects %}
-
-<label>
-
-<input
-type="checkbox"
-name="projects"
-value="{{ project.project_id }}">
-
-{{ project.project_name }}
-
-</label>
-
-<br>
-
-{% endfor %}
-
-<br>
-
-<button type="submit">
-
-Save Employee
-
-</button>
-
-</form>
-
-<br>
-
-<a href="{{ url_for('dashboard') }}">
-
-<button>
-
-Back
-
-</button>
-
-</a>
-
+  <div>
+    {% with submit_label = 'Save employee' %}
+      {% include "components/_employee_form.html" %}
+    {% endwith %}
+  </div>
 </div>
-
-</body>
-
-</html>
+{% endblock %}

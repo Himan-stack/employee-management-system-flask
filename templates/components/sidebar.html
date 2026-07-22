@@ -1,0 +1,82 @@
+{% from "components/macros.html" import icon %}
+<aside class="sidebar" data-sidebar aria-label="Primary navigation">
+  <div class="sidebar__brand">
+    <div class="sidebar__logo">50</div>
+    <div class="sidebar__brand-text">
+      <div class="sidebar__brand-title">50 Hertz HR</div>
+      <div class="sidebar__brand-sub">Energy Redefined</div>
+    </div>
+  </div>
+
+  <nav class="sidebar__nav" aria-label="Main">
+    <div class="sidebar__section">Workspace</div>
+
+    <a href="{{ url_for('dashboard') }}"
+       class="sidebar__item {% if request.endpoint == 'dashboard' %}is-active{% endif %}"
+       data-testid="nav-dashboard">
+      {{ icon('dashboard') }} <span>Dashboard</span>
+    </a>
+
+    <a href="{{ url_for('employees') }}"
+       class="sidebar__item {% if request.endpoint in ['employees','edit_employee'] %}is-active{% endif %}"
+       data-testid="nav-employees">
+      {{ icon('users') }} <span>Employees</span>
+    </a>
+
+    <a href="{{ url_for('add_employee') }}"
+       class="sidebar__item {% if request.endpoint == 'add_employee' %}is-active{% endif %}"
+       data-testid="nav-add-employee">
+      {{ icon('user-plus') }} <span>Add Employee</span>
+    </a>
+
+    <div class="sidebar__section">HR Modules</div>
+    <a class="sidebar__item is-disabled" aria-disabled="true">
+      {{ icon('calendar') }} <span>Attendance</span>
+      <span class="sidebar__item-badge">Soon</span>
+    </a>
+    <a class="sidebar__item is-disabled" aria-disabled="true">
+      {{ icon('wallet') }} <span>Payroll</span>
+      <span class="sidebar__item-badge">Soon</span>
+    </a>
+    <a class="sidebar__item is-disabled" aria-disabled="true">
+      {{ icon('briefcase') }} <span>Leave</span>
+      <span class="sidebar__item-badge">Soon</span>
+    </a>
+    <a class="sidebar__item is-disabled" aria-disabled="true">
+      {{ icon('sparkles') }} <span>Recruitment</span>
+      <span class="sidebar__item-badge">Soon</span>
+    </a>
+    <a class="sidebar__item is-disabled" aria-disabled="true">
+      {{ icon('trending-up') }} <span>Performance</span>
+      <span class="sidebar__item-badge">Soon</span>
+    </a>
+
+    <div class="sidebar__section">Insights</div>
+    <a class="sidebar__item is-disabled" aria-disabled="true">
+      {{ icon('chart') }} <span>Reports</span>
+      <span class="sidebar__item-badge">Soon</span>
+    </a>
+    <a class="sidebar__item is-disabled" aria-disabled="true">
+      {{ icon('pie') }} <span>Analytics</span>
+      <span class="sidebar__item-badge">Soon</span>
+    </a>
+
+    <div class="sidebar__section">System</div>
+    <a class="sidebar__item is-disabled" aria-disabled="true">
+      {{ icon('settings') }} <span>Settings</span>
+      <span class="sidebar__item-badge">Soon</span>
+    </a>
+    <a href="{{ url_for('logout') }}" class="sidebar__item" data-testid="nav-logout">
+      {{ icon('logout') }} <span>Sign out</span>
+    </a>
+  </nav>
+
+  <div class="sidebar__footer">
+    <div class="sidebar__avatar">A</div>
+    <div class="sidebar__user-info u-grow">
+      <div class="sidebar__user-name u-truncate">{{ session.admin|default('Admin') }}</div>
+      <div class="sidebar__user-role">System Administrator</div>
+    </div>
+  </div>
+</aside>
+<div class="sidebar-scrim" data-sidebar-scrim></div>

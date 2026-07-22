@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="app-shell">
+  {% include "components/sidebar.html" %}
+
+  <div class="main">
+    {% include "components/topbar.html" %}
+
+    <main class="page" id="main-content" role="main">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+{% include "components/confirm_modal.html" %}
+{% endblock %}

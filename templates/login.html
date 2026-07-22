@@ -1,53 +1,95 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
+{% from "components/macros.html" import icon %}
+{% block title %}Sign in{% endblock %}
 
-<head>
+{% block body %}
+<div class="auth-shell">
+  <aside class="auth-brand">
+    <div class="auth-brand__logo">
+      <div class="auth-brand__logo-mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polyline></svg>
+      </div>
+      <div>
+        <div style="font-size:15px">50 Hertz HR</div>
+        <div style="color:rgba(255,255,255,0.55);font-size:11px;font-weight:400">Energy Redefined</div>
+      </div>
+    </div>
 
-    <title>Admin Login</title>
+    <div class="auth-brand__hero">
+      <h1 class="auth-brand__title">People operations, <em>reimagined.</em></h1>
+      <p class="auth-brand__desc">
+        Manage your workforce with clarity — from onboarding to payroll,
+        performance to analytics. All in one modern workspace.
+      </p>
+      <div class="auth-brand__stats">
+        <div>
+          <div class="auth-brand__stat-num">10x</div>
+          <div class="auth-brand__stat-lbl">Faster onboarding</div>
+        </div>
+        <div>
+          <div class="auth-brand__stat-num">99.9%</div>
+          <div class="auth-brand__stat-lbl">Uptime SLA</div>
+        </div>
+        <div>
+          <div class="auth-brand__stat-num">SOC 2</div>
+          <div class="auth-brand__stat-lbl">Enterprise grade</div>
+        </div>
+      </div>
+    </div>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <div class="auth-brand__foot">
+      Developed by Himanshu under the guidance of Mr. Lokender Singh · Flask · MySQL · Chart.js
+    </div>
+  </aside>
 
-</head>
+  <div class="auth-form-wrap">
+    <form class="auth-form" method="POST" data-validate autocomplete="on">
+      <div class="u-row" style="justify-content: space-between;">
+        <div></div>
+        <button type="button" class="icon-btn" data-theme-toggle aria-label="Toggle theme">
+          <span data-theme-icon="light">{{ icon('moon') }}</span>
+          <span data-theme-icon="dark">{{ icon('sun') }}</span>
+        </button>
+      </div>
 
-<body>
+      <div class="auth-form__head">
+        <h1 class="auth-form__title">Welcome back</h1>
+        <p class="auth-form__sub">Sign in to continue to your workspace.</p>
+      </div>
 
-<div class="container">
+      {% if error %}
+        <div class="alert alert--danger" role="alert" data-testid="login-error">
+          {{ icon('alert', cls='alert__icon') }}
+          <div class="alert__body">{{ error }}</div>
+        </div>
+      {% endif %}
 
-<h2>Employee Management System</h2>
+      <div class="field">
+        <label class="field__label" for="username">Username</label>
+        <input class="input" id="username" name="username" type="text"
+               placeholder="admin" required data-required
+               autocomplete="username" data-testid="login-username">
+      </div>
 
-<h3>Admin Login</h3>
+      <div class="field">
+        <label class="field__label" for="password">Password</label>
+        <input class="input" id="password" name="password" type="password"
+               placeholder="••••••••" required data-required
+               autocomplete="current-password" data-testid="login-password">
+      </div>
 
-{% if error %}
+      <button type="submit" class="btn btn--primary btn--lg btn--block" data-testid="login-submit">
+        Sign in {{ icon('arrow-right') }}
+      </button>
 
-<p class="error">{{ error }}</p>
+      <div class="auth-form__hint">
+        <strong>Demo credentials:</strong> admin / admin123
+      </div>
 
-{% endif %}
-
-<form method="POST">
-
-<input
-type="text"
-name="username"
-placeholder="Username"
-required>
-
-<input
-type="password"
-name="password"
-placeholder="Password"
-required>
-
-<button type="submit">
-
-Login
-
-</button>
-
-</form>
-
+      <div class="auth-form__legal">
+        Protected by session-based authentication · © {{ 2025 }} 50 Hertz Energy
+      </div>
+    </form>
+  </div>
 </div>
-
-</body>
-
-</html>
+{% endblock %} 

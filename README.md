@@ -1299,43 +1299,6 @@ See the **LICENSE** file for more details.
 
 **B.Tech in Artificial Intelligence & Machine Learning**
 
-Guru Gobind Singh Indraprastha University (GGSIPU), Delhi
+Guru Gobind Singh Indraprastha University
 
-### Skills
-
-- Python
-- Flask
-- MySQL
-- SQL
-- HTML
-- CSS
-- JavaScript
-- Chart.js
-- Git
-- GitHub
-- Machine Learning
-- Data Analysis
-
----
-
-# ⭐ If you found this project useful
-
-If this repository helped you learn Flask or Employee Management System development, consider giving it a ⭐ on GitHub.
-
-It motivates me to continue building and sharing more real-world projects.
-
----
-
-<div align="center">
-
-## 🚀 Thank You for Visiting
-
-### Employee Management System
-
-**Built with ❤️ using Python, Flask & MySQL**
-
----
-
-*"Every professional application starts with solving a real-world problem. This project reflects my learning journey in backend development, database design, and full-stack web application development."*
-
-</div>
+Delhi

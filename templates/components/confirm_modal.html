@@ -1,0 +1,39 @@
+{% from "components/macros.html" import icon %}
+
+<div class="modal-overlay"
+     data-confirm-modal
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="confirm-title">
+
+    <div class="modal">
+
+        <div class="modal__head">
+            <div class="modal__title" id="confirm-title">
+                Delete employee?
+            </div>
+        </div>
+
+        <div class="modal__body" data-confirm-message>
+            This action cannot be undone.
+        </div>
+
+        <div class="modal__foot">
+            <button
+                type="button"
+                class="btn btn--secondary"
+                data-confirm-cancel>
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="btn btn--danger"
+                data-confirm-ok>
+                {{ icon('trash') }}
+                Delete
+            </button>
+        </div>
+
+    </div>
+</div>

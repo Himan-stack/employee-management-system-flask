@@ -1,0 +1,185 @@
+
+{#- ICON: renders an inline SVG by name. Uses Lucide-style icons. -#}
+{% macro icon(name, cls="") -%}
+  {%- set icons = {
+    "dashboard": '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+    "users":     '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    "user-plus":'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>',
+    "calendar":  '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+    "wallet":    '<path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><circle cx="16" cy="14" r="2"/>',
+    "briefcase": '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+    "chart":     '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+    "settings":  '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+    "search":    '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+    "bell":      '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+    "plus":      '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+    "download":  '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+    "edit":      '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+    "trash":     '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>',
+    "eye":       '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+    "chevron-right":'<polyline points="9 18 15 12 9 6"/>',
+    "chevron-left": '<polyline points="15 18 9 12 15 6"/>',
+    "chevron-down": '<polyline points="6 9 12 15 18 9"/>',
+    "sort":      '<path d="M11 5l-4 4 4 4"/><path d="M13 19l4-4-4-4"/>',
+    "menu":      '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>',
+    "sun":       '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m4.93 19.07 1.41-1.41"/><path d="m17.66 6.34 1.41-1.41"/>',
+    "moon":      '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+    "logout":    '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
+    "check":     '<polyline points="20 6 9 17 4 12"/>',
+    "x":         '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+    "alert":     '<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    "info":      '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
+    "mail":      '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
+    "phone":     '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+    "id-card":   '<rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="8" cy="12" r="2.5"/><line x1="14" y1="10" x2="18" y2="10"/><line x1="14" y1="14" x2="17" y2="14"/>',
+    "file":      '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+    "file-text": '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>',
+    "inbox":     '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+    "sparkles":  '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>',
+    "trending-up":'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+    "pie":       '<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>',
+    "arrow-right":'<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
+    "shield":    '<path d="M12 2 4 5v6c0 5 3.5 9.4 8 11 4.5-1.6 8-6 8-11V5l-8-3z"/>',
+    "clock":     '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    "map-pin":   '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+    "graduation":'<path d="M22 10 12 4 2 10l10 6 10-6z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/>',
+    "building":  '<rect x="4" y="2" width="16" height="20" rx="2"/><line x1="9" y1="6" x2="9.01" y2="6"/><line x1="9" y1="10" x2="9.01" y2="10"/><line x1="9" y1="14" x2="9.01" y2="14"/><line x1="15" y1="6" x2="15.01" y2="6"/><line x1="15" y1="10" x2="15.01" y2="10"/><line x1="15" y1="14" x2="15.01" y2="14"/><line x1="9" y1="18" x2="15" y2="18"/>'
+  } %}
+  <svg class="{{ cls }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+       aria-hidden="true">
+    {{ icons.get(name, icons["info"]) | safe }}
+  </svg>
+{%- endmacro %}
+
+{#- STAT CARD -#}
+{% macro stat_card(label, value, icon_name, tone="indigo", trend=None, hint=None) -%}
+<div class="stat" data-testid="stat-{{ label|lower|replace(' ', '-') }}">
+  <div class="stat__head">
+    <div class="stat__label">{{ label }}</div>
+    <div class="stat__icon stat__icon--{{ tone }}">{{ icon(icon_name) }}</div>
+  </div>
+  <div class="stat__value">{{ value }}</div>
+  {% if trend or hint %}
+  <div class="stat__foot">
+    {% if trend %}<span class="stat__trend stat__trend--{{ trend.dir|default('up') }}">
+      {{ icon('trending-up') }} {{ trend.label }}
+    </span>{% endif %}
+    {% if hint %}<span>{{ hint }}</span>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{%- endmacro %}
+
+{#- BADGE -#}
+{% macro badge(text, tone="") -%}
+  <span class="badge {% if tone %}badge--{{ tone }}{% endif %}">{{ text }}</span>
+{%- endmacro %}
+
+{#- INITIAL AVATAR (deterministic by name) -#}
+{% macro avatar(name) -%}
+    {%- set letter = (name or '?')[0]|upper -%}
+    {%- set tones = ['a','b','c','d','e','f'] -%}
+    {%- set shade = tones[((name or '?')|length) % 6] -%}
+
+    <span class="emp-cell__avatar avatar-{{ shade }}" aria-hidden="true">
+        {{ letter }}
+    </span>
+{%- endmacro %}
+
+{#- EMPTY STATE -#}
+{% macro empty_state(title, description, icon_name="inbox", action_label=None, action_href=None) -%}
+<div class="empty" data-testid="empty-state">
+  <div class="empty__icon">{{ icon(icon_name) }}</div>
+  <div class="empty__title">{{ title }}</div>
+  <div class="empty__desc">{{ description }}</div>
+  {% if action_label and action_href %}
+    <a href="{{ action_href }}" class="btn btn--primary" style="margin-top: 8px;">{{ icon('plus') }} {{ action_label }}</a>
+  {% endif %}
+</div>
+{%- endmacro %}
+
+{#- PAGINATION -#}
+{% macro pagination(page, total_pages, endpoint, search='') -%}
+{% if total_pages and total_pages > 0 %}
+<div class="pagination" data-testid="pagination">
+  <div class="pagination__info">
+    Page <strong>{{ page }}</strong> of <strong>{{ total_pages }}</strong>
+  </div>
+  <div class="pagination__controls">
+    <a class="pagination__btn {% if page <= 1 %}is-disabled{% endif %}"
+       {% if page > 1 %}href="{{ url_for(endpoint, page=page-1, search=search) }}"{% endif %}
+       aria-label="Previous page">
+      {{ icon('chevron-left') }} Prev
+    </a>
+    {%- set start = [1, page-2]|max -%}
+    {%- set end = [total_pages, page+2]|min -%}
+    {% if start > 1 %}
+      <a class="pagination__btn" href="{{ url_for(endpoint, page=1, search=search) }}">1</a>
+      {% if start > 2 %}<span class="pagination__btn is-disabled" style="border:none;background:none">…</span>{% endif %}
+    {% endif %}
+    {% for p in range(start, end+1) %}
+      <a class="pagination__btn {% if p == page %}is-active{% endif %}"
+         href="{{ url_for(endpoint, page=p, search=search) }}">{{ p }}</a>
+    {% endfor %}
+    {% if end < total_pages %}
+      {% if end < total_pages-1 %}<span class="pagination__btn is-disabled" style="border:none;background:none">…</span>{% endif %}
+      <a class="pagination__btn" href="{{ url_for(endpoint, page=total_pages, search=search) }}">{{ total_pages }}</a>
+    {% endif %}
+    <a class="pagination__btn {% if page >= total_pages %}is-disabled{% endif %}"
+       {% if page < total_pages %}href="{{ url_for(endpoint, page=page+1, search=search) }}"{% endif %}
+       aria-label="Next page">
+      Next {{ icon('chevron-right') }}
+    </a>
+  </div>
+</div>
+{% endif %}
+{%- endmacro %}
+
+{#- FIELD (input) -#}
+{% macro field(name, label, type="text", value="", placeholder="", required=False, hint=None, minlength=None, maxlength=None, min=None, max=None) -%}
+<div class="field">
+  <label class="field__label" for="{{ name }}">{{ label }}{% if required %}<span class="req">*</span>{% endif %}</label>
+  <input class="input" id="{{ name }}" name="{{ name }}" type="{{ type }}"
+         value="{{ value|default('', true) }}"
+         placeholder="{{ placeholder }}"
+         {% if required %}required data-required{% endif %}
+         {% if minlength %}minlength="{{ minlength }}"{% endif %}
+         {% if maxlength %}maxlength="{{ maxlength }}"{% endif %}
+         {% if min is not none %}min="{{ min }}"{% endif %}
+         {% if max is not none %}max="{{ max }}"{% endif %}
+         data-testid="field-{{ name }}">
+  {% if hint %}<span class="field__hint">{{ hint }}</span>{% endif %}
+  <span class="field__error" style="display:none">{{ icon('alert') }} This field is required</span>
+</div>
+{%- endmacro %}
+
+{#- SELECT -#}
+{% macro select_field(name, label, options, value=None, placeholder="Select…", required=False, hint=None) -%}
+<div class="field">
+  <label class="field__label" for="{{ name }}">{{ label }}{% if required %}<span class="req">*</span>{% endif %}</label>
+  <select class="select" id="{{ name }}" name="{{ name }}"
+          {% if required %}required data-required{% endif %}
+          data-testid="field-{{ name }}">
+    <option value="">{{ placeholder }}</option>
+    {% for opt in options %}
+      <option value="{{ opt.value }}" {% if value is not none and (opt.value|string) == (value|string) %}selected{% endif %}>{{ opt.label }}</option>
+    {% endfor %}
+  </select>
+  {% if hint %}<span class="field__hint">{{ hint }}</span>{% endif %}
+</div>
+{%- endmacro %}
+Action: file_editor str_replace /app/flask_ems_frontend/templates/components/macros.html --old-str "{#- INITIAL AVATAR (deterministic by name) -#}
+{% macro avatar(name) -%}
+  {%- set letter = ((name or '?')[0])|upper -%}
+  {%- set tones = ['a','b','c','d','e','f'] -%}
+  {%- set shade = tones[ ((name or '?')|length) % 6 ] -%}
+  <span class="emp-cell__avatar avatar-{{ shade }}" aria-hidden="true">{{ letter }}</span>
+{%- endmacro %}" --new-str "{#- INITIAL AVATAR (deterministic by name) -#}
+{% macro avatar(name) -%}   
+  {%- set letter = (name or '?')[0]|upper -%}           
+  {%- set tones = ['a','b','c','d','e','f'] -%}
+  {%- set shade = tones[ ((name or '?')|length) % 6 ] -%}
+  <span class="emp-cell__avatar avatar-{{ shade }}" aria-hidden="true">{{ letter }}</span>
+{%- endmacro %}"
+Observation: Edit was successful.

@@ -1,0 +1,35 @@
+{% from "components/macros.html" import icon %}
+<header class="topbar" role="banner">
+  <button class="topbar__menu-btn icon-btn" data-menu-toggle aria-label="Open menu">
+    {{ icon('menu') }}
+  </button>
+
+  <nav class="topbar__breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ url_for('dashboard') }}">HR</a>
+    <span class="sep">{{ icon('chevron-right') }}</span>
+    <span class="current">{% block breadcrumb %}Dashboard{% endblock %}</span>
+  </nav>
+
+  <form class="topbar__search" method="GET" action="{{ url_for('employees') }}" role="search">
+    {{ icon('search') }}
+    <input type="text" name="search"
+           placeholder="Search employees…"
+           aria-label="Search employees"
+           data-global-search
+           data-testid="topbar-search">
+    <span class="topbar__kbd">/</span>
+  </form>
+
+  <div class="topbar__actions">
+    <button class="icon-btn" data-theme-toggle aria-label="Toggle theme" data-testid="theme-toggle">
+      <span data-theme-icon="light">{{ icon('moon') }}</span>
+      <span data-theme-icon="dark">{{ icon('sun') }}</span>
+    </button>
+    <button class="icon-btn" aria-label="Notifications" title="Notifications">
+      {{ icon('bell') }}
+    </button>
+    <a href="{{ url_for('add_employee') }}" class="btn btn--primary" data-testid="topbar-add-employee">
+      {{ icon('plus') }} <span>Add Employee</span>
+    </a>
+  </div>
+</header>

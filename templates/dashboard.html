@@ -1,236 +1,226 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
+{% from "components/macros.html" import icon, stat_card, avatar, empty_state %}
 
-<head>
+{% block title %}Dashboard{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
 
-    <title>Dashboard</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
-
-</head>
-
-<body>
-
-<div class="container">
-
-    <h1>Employee Management System</h1>
-
-    <h3>Welcome Admin 👋</h3>
-
-    <div class="cards">
-
-        <div class="card">
-            <h2>Employees</h2>
-            <p>{{ employees }}</p>
-        </div>
-
-        <div class="card">
-            <h2>Departments</h2>
-            <p>{{ departments }}</p>
-        </div>
-
-        <div class="card">
-            <h2>Projects</h2>
-            <p>{{ projects }}</p>
-        </div>
-
-        <div class="card">
-            <h2>Salary Records</h2>
-            <p>{{ salary }}</p>
-        </div>
-    </div>
-
-        <div class="cards">
-        <div class="card">
-        <h2>Highest Salary</h2>
-        <p>₹ {{ highest_salary }}</p>
-    </div>
-
-    <div class="card">
-        <h2>Lowest Salary</h2>
-        <p>₹ {{ lowest_salary }}</p>
-    </div>
-
-    <div class="card">
-        <h2>Average Salary</h2>
-        <p>₹ {{ average_salary }}</p>
-    </div>
-
-    </div>
-
-    <br>
-    <hr>
-
-    <h3>🔍 Quick Employee Search</h3>
-
-    <form action="{{ url_for('employees') }}" method="GET">
-
-    <div class="search-box">
-
-    <input
-    type="text"
-    name="search"
-    placeholder="Search Employee">
-
-    <button>
-
-    🔍 Search
-
-    </button>
-
-    </div>
-
-    </form>
-
-    <hr>
-
-    <a href="{{ url_for('add_employee') }}">
-        <button>➕ Add Employee</button>
+{% block content %}
+<!-- Page header -->
+<section class="page-header">
+  <div>
+    <h1 class="page-header__title">Good day, {{ session.admin|default('Admin')|capitalize }} 👋</h1>
+    <p class="page-header__subtitle">Here's what's happening across your workforce today.</p>
+  </div>
+  <div class="page-header__actions">
+    <a href="{{ url_for('download_csv') }}" class="btn btn--secondary" data-testid="dashboard-export-csv">
+      {{ icon('download') }} Export CSV
     </a>
-
-    <br><br>
-
-    <a href="{{ url_for('employees') }}">
-        <button>👥 View Employees</button>
+    <a href="{{ url_for('add_employee') }}" class="btn btn--primary" data-testid="dashboard-add-employee">
+      {{ icon('plus') }} Add Employee
     </a>
+  </div>
+</section>
 
-    <hr>
-    <div class="chart-container">
+<!-- KPI stats -->
+<section class="grid grid-4" style="margin-bottom: var(--s-6);">
+  {{ stat_card('Employees',     employees,     'users',      'indigo',
+                trend={'label':'Active', 'dir':'up'},
+                hint='Total headcount') }}
+  {{ stat_card('Departments',   departments,   'building',   'sky',
+                hint='Across the organisation') }}
+  {{ stat_card('Projects',      projects,      'briefcase',  'emerald',
+                hint='Currently tracked') }}
+  {{ stat_card('Salary Records', salary,       'wallet',     'amber',
+                hint='Payroll entries') }}
+</section>
 
-    <div class="chart-box">
-
-        <h3>Employees by Department</h3>
-
-        <canvas id="departmentChart"></canvas>
-
+<!-- Salary insights row -->
+<section class="grid grid-3" style="margin-bottom: var(--s-6);">
+  <div class="card">
+    <div class="card__body u-stack" style="gap: var(--s-3)">
+      <div class="u-spread">
+        <div class="stat__label">Highest Salary</div>
+        <div class="stat__icon stat__icon--emerald">{{ icon('trending-up') }}</div>
+      </div>
+      <div class="stat__value" data-testid="stat-highest">₹ {{ '{:,.0f}'.format(highest_salary or 0) }}</div>
+      <div class="stat__foot">Top-tier compensation</div>
     </div>
-
-    <div class="chart-box">
-
-        <h3>Department Distribution</h3>
-
-        <canvas id="pieChart"></canvas>
-
+  </div>
+  <div class="card">
+    <div class="card__body u-stack" style="gap: var(--s-3)">
+      <div class="u-spread">
+        <div class="stat__label">Average Salary</div>
+        <div class="stat__icon stat__icon--indigo">{{ icon('chart') }}</div>
+      </div>
+      <div class="stat__value" data-testid="stat-average">₹ {{ '{:,.0f}'.format(average_salary or 0) }}</div>
+      <div class="stat__foot">Company mean</div>
     </div>
-
+  </div>
+  <div class="card">
+    <div class="card__body u-stack" style="gap: var(--s-3)">
+      <div class="u-spread">
+        <div class="stat__label">Lowest Salary</div>
+        <div class="stat__icon stat__icon--rose">{{ icon('wallet') }}</div>
+      </div>
+      <div class="stat__value" data-testid="stat-lowest">₹ {{ '{:,.0f}'.format(lowest_salary or 0) }}</div>
+      <div class="stat__foot">Entry level baseline</div>
     </div>
-    
+  </div>
+</section>
 
-    <br>
+<!-- Charts + Recent employees -->
+<section class="dashboard-grid" style="margin-bottom: var(--s-6);">
+  <div class="card chart-card">
+    <div class="card__header">
+      <div>
+        <div class="card__title">Employees by Department</div>
+        <div class="card__subtitle">Live headcount distribution</div>
+      </div>
+      <span class="badge badge--indigo">{{ icon('chart') }} Bar</span>
+    </div>
+    <div class="chart-card__body" style="height: 340px;">
+      {% if labels and labels|length > 0 %}
+        <canvas id="departmentChart" data-testid="chart-department-bar"></canvas>
+      {% else %}
+        {{ empty_state('No data yet', 'Add employees to visualise distribution.', 'chart') }}
+      {% endif %}
+    </div>
+  </div>
 
-    <a href="{{ url_for('logout') }}">
-        <button>🚪Logout</button>
+  <div class="card chart-card">
+    <div class="card__header">
+      <div>
+        <div class="card__title">Department Split</div>
+        <div class="card__subtitle">Share of workforce</div>
+      </div>
+      <span class="badge badge--sky">{{ icon('pie') }} Donut</span>
+    </div>
+    <div class="chart-card__body" style="height: 340px;">
+      {% if labels and labels|length > 0 %}
+        <canvas id="pieChart" data-testid="chart-department-donut"></canvas>
+      {% else %}
+        {{ empty_state('No data yet', 'Charts will appear once you add employees.', 'pie') }}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Quick actions -->
+<section style="margin-bottom: var(--s-6);">
+  <h3 style="margin-bottom: var(--s-4); font-size: var(--fs-md);">Quick actions</h3>
+  <div class="qa-grid">
+    <a href="{{ url_for('add_employee') }}" class="qa" data-testid="qa-add">
+      <div class="qa__icon">{{ icon('user-plus') }}</div>
+      <div>
+        <div class="qa__title">Add Employee</div>
+        <div class="qa__desc">Onboard a new team member</div>
+      </div>
     </a>
-    <hr>
-    <div class="table-container">
-    <h3>Recently Added Employees</h3>
+    <a href="{{ url_for('employees') }}" class="qa" data-testid="qa-view">
+      <div class="qa__icon" style="background:rgba(6,182,212,0.10);color:var(--accent-600)">{{ icon('users') }}</div>
+      <div>
+        <div class="qa__title">View Directory</div>
+        <div class="qa__desc">Browse all employees</div>
+      </div>
+    </a>
+    <a href="{{ url_for('download_pdf') }}" class="qa" data-testid="qa-pdf">
+      <div class="qa__icon" style="background:rgba(239,68,68,0.10);color:#dc2626">{{ icon('file-text') }}</div>
+      <div>
+        <div class="qa__title">PDF Report</div>
+        <div class="qa__desc">Download workforce report</div>
+      </div>
+    </a>
+    <a href="{{ url_for('download_csv') }}" class="qa" data-testid="qa-csv">
+      <div class="qa__icon" style="background:rgba(16,185,129,0.10);color:var(--success-600)">{{ icon('download') }}</div>
+      <div>
+        <div class="qa__title">CSV Export</div>
+        <div class="qa__desc">Data for spreadsheets</div>
+      </div>
+    </a>
+  </div>
+</section>
 
-<table>
+<!-- Recent employees + activity -->
+<section class="dashboard-grid">
+  <div class="card">
+    <div class="card__header">
+      <div>
+        <div class="card__title">Recently Added Employees</div>
+        <div class="card__subtitle">Last 5 hires</div>
+      </div>
+      <a href="{{ url_for('employees') }}" class="btn btn--ghost btn--sm">View all {{ icon('arrow-right') }}</a>
+    </div>
+    <div class="table-scroll">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Code</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for emp in recent_employees %}
+          <tr>
+            <td>
+              <div class="emp-cell">
+                {{ avatar(emp.name) }}
+                <div class="emp-cell__meta">
+                  <div class="emp-cell__name">{{ emp.name }}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="u-mono">{{ emp.employee_code }}</span></td>
+            <td><span class="u-muted">{{ emp.email }}</span></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3">{{ empty_state('No employees yet', 'Add your first team member to get started.', 'users', 'Add Employee', url_for('add_employee')) }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-    <tr>
+  <div class="card">
+    <div class="card__header">
+      <div>
+        <div class="card__title">Activity feed</div>
+        <div class="card__subtitle">Latest changes</div>
+      </div>
+      <span class="badge">{{ icon('clock') }} Live</span>
+    </div>
+    <div class="card__body">
+      <div class="activity-list">
+        {% for emp in recent_employees[:5] %}
+          <div class="activity-item">
+            <span class="activity-dot"></span>
+            <div class="activity-body">
+              <div><strong>{{ emp.name }}</strong> joined the organisation.</div>
+              <div class="activity-time">Employee code {{ emp.employee_code }}</div>
+            </div>
+          </div>
+        {% else %}
+          <div style="padding: var(--s-4) 0; text-align:center;">
+            <p class="u-muted">No recent activity to show.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
 
-    <th>Code</th>
-
-    <th>Name</th>
-
-    <th>Email</th>
-
-    </tr>
-
-    {% for emp in recent_employees %}
-
-    <tr>
-
-    <td>{{ emp.employee_code }}</td>
-
-    <td>{{ emp.name }}</td>
-
-    <td>{{ emp.email }}</td>
-
-    </tr>
-
-    {% endfor %}
-
-</table>
-
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
 <script>
-
-const labels = {{ labels | tojson }};
-const values = {{ values | tojson }};
-
-new Chart(document.getElementById("departmentChart"), {
-
-    type: "bar",
-
-    data: {
-
-        labels: labels,
-
-        datasets: [{
-
-            label: "Employees",
-
-            data: values
-
-        }]
-    },
-
-    options: {
-
-        responsive: true,
-
-        scales: {
-
-            y: {
-
-                beginAtZero: true
-
-            }
-
-        }
-
+  (function () {
+    const labels = {{ labels | tojson }};
+    const values = {{ values | tojson }};
+    if (window.EMSCharts && labels && labels.length) {
+      window.EMSCharts.bar("departmentChart", labels, values, "Employees");
+      window.EMSCharts.doughnut("pieChart", labels, values);
     }
-
-});
-
-new Chart(document.getElementById("pieChart"),{
-
-    type:"pie",
-
-    data:{
-
-        labels:labels,
-
-        datasets:[{
-
-            data:values
-
-        }]
-
-    }
-
-});
-
+  })();
 </script>
-
-<footer class="footer">
-
-    <img src="{{ url_for('static', filename='images/50hertz.png') }}" alt="50 Hertz Logo">
-
-    <h2>50 Hertz Energy Redefined</h2>
-
-    <p>Employee Management System</p>
-
-    <p>Internship Project</p>
-
-    <p>Developed by Himanshu under the guidance of Mr. Lokender Singh</p>
-
-    <p>Flask • MySQL • HTML • CSS • Chart.js</p>
-
-</footer>
-</div>
-</body>
-</html>
+{% endblock %}
